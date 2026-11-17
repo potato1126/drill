@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>情報生命科学 4択ドリル</title>
+<title>情報生命科学ドリル</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -112,13 +112,22 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
   .qtext{font-size:1.05rem}
   .stat b{font-size:1.3rem}
 }
+.ic.f{background:#7a5bb5}
+.ynrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choice.yn{justify-content:center;text-align:center;font-size:1.15rem;font-weight:800;padding:18px 14px}
+.blank{display:inline-block;background:var(--warn-bg);border-bottom:3px solid var(--warn);border-radius:6px;padding:0 6px;margin:0 2px;font-weight:800;color:var(--warn)}
+.blank.filled{background:var(--ok-bg);border-bottom-color:var(--ok);color:var(--ok)}
+.answer-row{display:flex;gap:10px;flex-wrap:wrap}
+.ans{flex:1 1 220px;min-height:50px;border:2px solid var(--line);border-radius:14px;padding:10px 14px;font:inherit;font-size:1.05rem;background:#fff;color:var(--ink);width:100%}
+.ans:focus{outline:none;border-color:var(--main)}
+input.ans.wr{margin-top:8px}
 :focus-visible{outline:3px solid #4a90e2;outline-offset:2px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <button class="brand" id="homeLink" type="button"><span class="dot">生</span>情報生命科学 4択ドリル</button>
+    <button class="brand" id="homeLink" type="button"><span class="dot">生</span>情報生命科学ドリル</button>
     <span class="save" id="saveState">読み込み中…</span>
   </header>
   <main id="app"></main>
@@ -766,6 +775,693 @@ const QUESTIONS = [
 ];
 if (typeof module !== "undefined") module.exports = QUESTIONS;
 
+const FORMS = {
+ "yn": [
+  {
+   "q": "間脳は脳幹の一部である。",
+   "a": false,
+   "exp": "脳幹は中脳・橋・延髄からなります。間脳(視床・視床下部)は脳幹とは別の部分です。",
+   "src": "第2回「神経系の機能」"
+  },
+  {
+   "q": "脳幹は脳の中で、頭蓋骨の内側にある部分をさす。",
+   "a": true,
+   "exp": "脳幹は、頭蓋骨の内側(大脳に包まれた奥)にあり、脊髄につながっています。",
+   "src": "第2回「神経系の機能」"
+  },
+  {
+   "q": "軸索は神経細胞において、神経細胞体からの情報を神経終末へ伝える。",
+   "a": true,
+   "exp": "情報は、樹状突起・神経細胞体から軸索を通って、先端の神経終末へ伝わります。",
+   "src": "第2回「神経細胞」"
+  },
+  {
+   "q": "細胞膜では、リン脂質の疎水部同士が互いに接している。",
+   "a": true,
+   "exp": "細胞膜の内側では、2層のリン脂質の疎水部(炭化水素の鎖)どうしが向かい合って接しています。",
+   "src": "第3回「細胞膜の構造と特徴」"
+  },
+  {
+   "q": "リン脂質の頭部は電荷をもつため親水性である。",
+   "a": true,
+   "exp": "リン脂質の頭部(親水部)にはリン酸があり、電荷を持つので水になじむ親水性です。",
+   "src": "第3回「細胞膜の構造と特徴」"
+  },
+  {
+   "q": "イオンは電荷をもつため、細胞膜の疎水性の部分と親和性が高い。",
+   "a": false,
+   "exp": "電荷を持つイオンは、電荷を持たない疎水性の部分とはなじみません。なじむのは親水性の部分です。",
+   "src": "第3回「細胞膜の物質輸送」"
+  },
+  {
+   "q": "イオンチャネルで濃度勾配に逆らってイオンを輸送するには、ATPの分解によるエネルギーが必要である。",
+   "a": false,
+   "exp": "イオンチャネルは濃度勾配に従う受動輸送で、エネルギーを使いません。濃度勾配に逆らってATPのエネルギーで運ぶのはイオンポンプです。",
+   "src": "第3回「細胞膜の物質輸送」・第4回「イオンポンプ」"
+  },
+  {
+   "q": "イオンチャネルの選択性は、チャネルを通るイオンの種類を決定するのに重要である。",
+   "a": true,
+   "exp": "イオンチャネルはそれぞれ通すイオンの種類が決まっています(選択性)。",
+   "src": "第4回「イオンチャネル」"
+  },
+  {
+   "q": "Na+/K+ポンプの働きにより細胞内へ電荷が取り込まれる",
+   "a": false,
+   "exp": "Na+/K+ポンプは、全体としてプラスの電荷を細胞外へくみ出します(Na+を3つ出して、K+を2つ入れる)。",
+   "src": "第4回「イオンポンプ」・第5回「細胞膜の静止電位1」"
+  },
+  {
+   "q": "負電荷を持つ物質は、電場において低電位側から高電位側に力を受ける性質がある。",
+   "a": true,
+   "exp": "マイナスの電荷は、プラスの電荷が多い高電位側に引き寄せられます。つまり低電位側から高電位側へ力を受けます。",
+   "src": "第5回「電位の概念」"
+  },
+  {
+   "q": "細胞膜の細胞内側は正電荷が多いので電位は高い。",
+   "a": false,
+   "exp": "静止状態では、細胞膜の内側は負電荷が多く、電位は低くなっています(膜電位はマイナス)。",
+   "src": "第5回「細胞膜の静止電位1」"
+  },
+  {
+   "q": "Na+/K+ポンプは細胞内の電位を高く維持するために有用である。",
+   "a": false,
+   "exp": "Na+/K+ポンプはプラスの電荷を細胞外へ出すので、細胞内の電位を低く保つのに役立ちます。",
+   "src": "第5回「細胞膜の静止電位1」"
+  },
+  {
+   "q": "K+リークチャネルはゲートを持つチャネルの一種である。",
+   "a": false,
+   "exp": "K+リークチャネルはゲートを持たず、常に開いていてK+を通します。",
+   "src": "第4回「イオンチャネル」・第5回「細胞膜の静止電位1」"
+  },
+  {
+   "q": "K+は細胞内より細胞外の方が濃度が高いので、濃度勾配による細胞内方向への力が働く。",
+   "a": false,
+   "exp": "K+は細胞外より細胞内の方が濃度が高いので、濃度勾配の力はK+を細胞外へ向かわせます。",
+   "src": "第5回「細胞膜の静止電位1」"
+  },
+  {
+   "q": "静止状態では、Na+に対する電場の力と濃度勾配の力の方向が反対であるため、電位が安定する。",
+   "a": false,
+   "exp": "静止電位で釣り合っているのはNa+ではなくK+です。K+に対する電場の力(細胞内向き)と濃度勾配の力(細胞外向き)が反対向きで釣り合っています。",
+   "src": "第5回「細胞膜の静止電位2」"
+  }
+ ],
+ "wr": [
+  {
+   "q": "動物細胞の核には[細胞, 保存, X]するDNA分子がある",
+   "model": "動物細胞の核には[細胞の遺伝情報を保存]するDNA分子がある",
+   "exp": "核の中にあるDNAは、細胞の遺伝情報を保存している分子です。「細胞」「保存」の2語を使い、Xに「遺伝情報」を入れます。",
+   "src": "第1回「生命とは」"
+  },
+  {
+   "q": "中枢神経系は[X,Y]にわけられる",
+   "model": "中枢神経系は[脳と脊髄]にわけられる",
+   "exp": "中枢神経系は脳と脊髄からなります。それ以外の、体の各部に伸びる神経は末梢神経系です。",
+   "src": "第1回「神経系の構造」"
+  },
+  {
+   "q": "中枢神経系の中で、[運動, 調節, X脳]を行う",
+   "model": "中枢神経系の中で、[小脳は運動の調節]を行う",
+   "exp": "小脳は運動の調節(体のバランスや、なめらかな動き)を担当します。Xに「小」が入り、「小脳」になります。",
+   "src": "第2回「神経系の機能」"
+  },
+  {
+   "q": "神経細胞体には、[タンパク質, X,Y]などの細胞小器官がある",
+   "model": "神経細胞体には、[タンパク質を合成するリボソーム]などの細胞小器官がある",
+   "exp": "神経細胞体には核や、タンパク質を合成するリボソームなどの細胞小器官があります。リボソームは神経細胞体に多く集まっています。",
+   "src": "第2回「神経細胞」"
+  },
+  {
+   "q": "神経細胞の[末端, X, Y]があり、この部分で他の細胞とつながる",
+   "model": "神経細胞の[軸索の末端には神経終末]があり、この部分で他の細胞とつながる",
+   "exp": "軸索の先端(末端)にある神経終末が、シナプスで次の細胞とつながります。「神経末端」と書いても同じ意味なので正答です。",
+   "src": "第2回「神経細胞」"
+  },
+  {
+   "q": "リン脂質は[X部,Y部]という二つの構造に分かれる",
+   "model": "リン脂質は[親水部と疎水部]という二つの構造に分かれる",
+   "exp": "リン脂質は、リン酸を含み水になじむ親水部と、炭化水素の鎖でできた水になじまない疎水部の2つの部分からなります。",
+   "src": "第3回「細胞膜の構造と特徴」"
+  },
+  {
+   "q": "[X脂質, Y部]は電荷を持たないためY性である",
+   "model": "[リン脂質の疎水部]は電荷を持たないため疎水性である",
+   "exp": "疎水部は炭化水素(油)でできていて電荷を持たないので、水になじまない疎水性です。",
+   "src": "第3回「細胞膜の構造と特徴」"
+  },
+  {
+   "q": "細胞膜の[リンX, Y部]は、細胞膜で水に面する側になる",
+   "model": "細胞膜の[リン脂質の親水部]は、細胞膜で水に面する側になる",
+   "exp": "細胞の外も中も水(液体)なので、水になじむ親水部が両側の水に面し、疎水部どうしが内側で向かい合います。",
+   "src": "第3回「細胞膜の構造と特徴」"
+  },
+  {
+   "q": "細胞膜は、[Xなど, Y]を持つものを通さない",
+   "model": "細胞膜は、[イオンなど電荷]を持つものを通さない",
+   "exp": "イオンのように電荷を持つものは、疎水部にはじかれるので、リン脂質の部分を通れません。イオンは膜タンパク質を通ります。",
+   "src": "第3回「細胞膜の物質輸送」"
+  },
+  {
+   "q": "[外部, Xなど, Y]を使わずに行われる物質輸送を受動輸送という",
+   "model": "[拡散など、外部からのエネルギー]を使わずに行われる物質輸送を受動輸送という",
+   "exp": "拡散のように、濃度勾配に従って物質が移動し、外部からのエネルギー(ATPなど)を使わない輸送が受動輸送です。",
+   "src": "第3回「細胞膜の物質輸送」"
+  },
+  {
+   "q": "イオンチャネルでは、チャネルの[通す, Xにより, Y]の種類が決まっている",
+   "model": "イオンチャネルでは、チャネルの[選択性により通すイオン]の種類が決まっている",
+   "exp": "イオンチャネルには選択性があり、チャネルごとに通すイオンの種類(カリウムイオン、ナトリウムイオンなど)が決まっています。",
+   "src": "第4回「イオンチャネル」"
+  },
+  {
+   "q": "Na+/K+ ポンプはATP1分子の分解で[2つ, 3つ, Xイオン,Y,イオン]を逆方向に移動させる",
+   "model": "Na+/K+ポンプはATP1分子の分解で[2つのK+イオンと3つのNa+イオン]を逆方向に移動させる",
+   "exp": "Na+/K+ポンプは、ATP1分子を分解したエネルギーで、3つのNa+を細胞外へ、2つのK+を細胞内へ運びます(3:2)。",
+   "src": "第4回「イオンポンプ」"
+  },
+  {
+   "q": "Na+/K+ ポンプは[細胞内, 細胞外, Xイオン,Y,イオン]に移動させる",
+   "model": "Na+/K+ ポンプは[K+イオンを細胞内、Na+イオンを細胞外]に移動させる",
+   "exp": "細胞内はK+が多くNa+が少ない状態です。Na+/K+ポンプは濃度勾配に逆らってK+を細胞内へ、Na+を細胞外へ運び、この状態を保ちます。",
+   "src": "第4回「イオンポンプ」"
+  },
+  {
+   "q": "Na+/K+ポンプは全体として[電荷, 細胞X, Y]へ輸送する起電性ポンプである",
+   "model": "Na+/K+ポンプは全体として[プラスの電荷を細胞外]へ輸送する起電性ポンプである",
+   "exp": "Na+を3つ出してK+を2つ入れるので、全体としてプラスの電荷が1つ分、細胞外へ出ます。このように電位差を生むポンプを起電性ポンプと言います。",
+   "src": "第4回「イオンポンプ」・第5回「細胞膜の静止電位1」"
+  },
+  {
+   "q": "[基準, 細胞X]計測する[電位, 細胞Y]を膜電位と呼ぶ",
+   "model": "[細胞外を基準として]計測する[細胞内の電位]を膜電位と呼ぶ",
+   "exp": "膜電位は、細胞外の電位を基準(0mV)として測った細胞内の電位です。静止状態ではマイナス(約-70mV)になります。",
+   "src": "第5回「電位の概念」「細胞膜の静止電位1」"
+  },
+  {
+   "q": "Na+/K+ポンプは、プラスのイオンを[多く運び、膜電位、細胞X,Yげる]",
+   "model": "Na+/K+ポンプは、プラスのイオンを[細胞外に多く運び、膜電位を下げる]",
+   "exp": "Na+/K+ポンプはプラスの電荷を細胞外に多く運ぶので、細胞内のプラスが減り、膜電位が下がります(よりマイナスになります)。",
+   "src": "第5回「細胞膜の静止電位1」"
+  },
+  {
+   "q": "静止状態では、[細胞外方向,細胞内方向, Xの力、Yの力]が釣り合っている",
+   "model": "静止状態では、[細胞外方向の濃度勾配の力と細胞内方向の電位の力]が釣り合っている",
+   "exp": "静止状態のK+リークチャネルでは、濃度勾配の力はK+を細胞外へ、電位(電場)の力はK+を細胞内へ向かわせます。この2つの力が釣り合って膜電位が安定します。",
+   "src": "第5回「細胞膜の静止電位2」"
+  },
+  {
+   "q": "静止状態よりも細胞内のカリウムイオンが増えると、[結果的に、膜電位、Xの力は強くなり、Y]する",
+   "model": "静止状態よりも細胞内のカリウムイオンが増えると、[濃度勾配の力は強くなり、結果的に膜電位は下降]する",
+   "exp": "細胞内のK+が増えると、K+を外へ出そうとする濃度勾配の力が強くなります。K+(プラス)が外へ出るので、膜電位は下降します(よりマイナスになります)。",
+   "src": "第5回「細胞膜の静止電位2」"
+  }
+ ],
+ "fb": [
+  {
+   "q": "末梢神経系の中で、<XXX>神経系は内臓・血管などの働きを制御する。",
+   "a": "自律",
+   "g": "第1・2回"
+  },
+  {
+   "q": "体性神経系の中で、<XXX>神経は皮膚などのセンサーからの刺激を脳に伝える。",
+   "a": "感覚",
+   "g": "第1・2回"
+  },
+  {
+   "q": "末梢神経系の中で、<XXX>神経系は体の知覚・運動を制御する",
+   "a": "体性",
+   "g": "第1・2回"
+  },
+  {
+   "q": "体性神経系の中で、<XXX>神経は脳から筋肉などに刺激を伝える。",
+   "a": "運動",
+   "g": "第1・2回"
+  },
+  {
+   "q": "中枢神経系の中で、<XXX>は、運動の調節を行う",
+   "a": "小脳",
+   "g": "第1・2回"
+  },
+  {
+   "q": "ヒトの神経系のうち、脳や脊髄は中枢神経系、それ以外は<XXX>である。",
+   "a": "末梢神経系",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経終末が<XXX>の表面に付いている構造を神経筋接合部という。",
+   "a": "筋肉",
+   "g": "第1・2回"
+  },
+  {
+   "q": "中枢神経系の中で、<XXX>は、呼吸や血圧など、生命維持に直接関わる機能の調節を行う。",
+   "a": "脳幹",
+   "g": "第1・2回"
+  },
+  {
+   "q": "<XXX>は、別の神経細胞の樹状突起や神経細胞体に接合し、それらを刺激して情報を伝える",
+   "a": "神経終末",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経細胞体から１本だけ伸びる、長い突起状の構造を<XXX>と言う。",
+   "a": "軸索",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経細胞の中で、核が存在する部分を神経細胞体と言う。ここは、タンパク質を合成する<XXX>など、細胞の維持に必要な細胞小器官が集中している。",
+   "a": "リボソーム",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経細胞で、<XXX>から数多く出てる突起状の構造を樹状突起と言う",
+   "a": "神経細胞体",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経細胞で、神経細胞体から数多く出てる突起状の構造を<XXX>と言う",
+   "a": "樹状突起",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経細胞の<XXX>の末端には神経終末があり、この部分で他の細胞とつながる。",
+   "a": "軸索",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経終末は、別の神経細胞の樹状突起や<XXX>に接合し、それらを刺激して情報を伝える",
+   "a": "神経細胞体",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経細胞の軸索の末端には<XXX>があり、この部分で他の細胞とつながる。",
+   "a": "神経終末",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経細胞は<XXX>とも呼ばれる",
+   "a": "ニューロン",
+   "g": "第1・2回"
+  },
+  {
+   "q": "神経細胞の樹状突起には他の神経細胞の<XXX>が付着しており、神経細胞間の情報伝達に使われています。",
+   "a": "神経終末",
+   "g": "第1・2回"
+  },
+  {
+   "q": "リン脂質は親水部と<XXX>という二つの構造に分かれ、前者にはリン酸というリンと酸素からなる分子が存在します。",
+   "a": "疎水部",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜のリン脂質の親水部は、水になじみやすく、細胞膜を作るときに<XXX>に面する側に位置します。",
+   "a": "水",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜のリン脂質の疎水部には、炭化水素、すなわち脂質分子が存在します。この構造は水と反発し、脂質二重膜で<XXX>と直接接しない面になります。",
+   "a": "水",
+   "g": "第3回"
+  },
+  {
+   "q": "リン脂質の親水部は<XXX>を持つため親水性である。",
+   "a": "電荷",
+   "g": "第3回"
+  },
+  {
+   "q": "<XXX>のように、外部からのエネルギーを使わずに行われる物質輸送を受動輸送という。",
+   "a": "拡散",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜において、エネルギー分子を分解して得られる力を用いて物質を輸送することを、<XXX>輸送といいます。",
+   "a": "能動",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜は、脂質など<XXX>を持たないものを通しやすい。",
+   "a": "電荷",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜のリン脂質の疎水部には、<XXX>水素、すなわち脂質分子が存在します。この構造は水と反発し、脂質二重膜で水と直接接しない面になります。",
+   "a": "炭化",
+   "g": "第3回"
+  },
+  {
+   "q": "拡散のように、外部からのエネルギーを使わずに行われる物質輸送を<XXX>輸送という。",
+   "a": "受動",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜において、電気は膜輸送体と言われる膜<XXX>質を通る。",
+   "a": "たんぱく",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜を構成する<XXX>は絶縁体であるため、電気を通さない。",
+   "a": "脂質",
+   "g": "第3回"
+  },
+  {
+   "q": "リン脂質の疎水部は電荷を持たないため<XXX>性である。",
+   "a": "疎水",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜のリン脂質の<XXX>部は、水になじみやすく、細胞膜を作るときに水に面する側に位置します。",
+   "a": "親水",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜において、電気は<XXX>体と言われる膜たんぱく質を通る。",
+   "a": "膜輸送",
+   "g": "第3回"
+  },
+  {
+   "q": "細胞膜は、イオンなど<XXX>を持つものを通さない。",
+   "a": "電荷",
+   "g": "第3回"
+  },
+  {
+   "q": "溶液において、濃度の高いところから低いところへ、濃度<XXX>に従って物質が移動することを拡散という。",
+   "a": "勾配",
+   "g": "第3回"
+  },
+  {
+   "q": "リガンドとはイオンチャネルに結合できる化学物質のことであり、これが結合しているかどうかでチャネルが開くか閉じるかが決まることをリガンド<XXX>という。",
+   "a": "依存性",
+   "g": "第4回"
+  },
+  {
+   "q": "細胞内にどれくらい電荷がたまっているかによって、イオンチャネルが開くか閉じるかが決まることを電位<XXX>という。",
+   "a": "依存性",
+   "g": "第4回"
+  },
+  {
+   "q": "イオンポンプは、エネルギーを使う事で、濃度勾配に逆らった輸送が可能である。これが<XXX>輸送である。",
+   "a": "能動",
+   "g": "第4回"
+  },
+  {
+   "q": "イオンチャネルにおいて、ある条件ではイオンを通し別の条件ではイオンを通さないのはチャネルの<XXX>の働きである。",
+   "a": "ゲート",
+   "g": "第4回"
+  },
+  {
+   "q": "イオンポンプは、自身の<XXX>変化によってイオン輸送を行う",
+   "a": "構造",
+   "g": "第4回"
+  },
+  {
+   "q": "イオンチャネルにおいて、通すイオンの種類が決まっていることをイオン<XXX>という。",
+   "a": "選択性",
+   "g": "第4回"
+  },
+  {
+   "q": "イオンポンプは、<XXX>を使う事で、濃度勾配に逆らった輸送が可能である。これが能動輸送である。",
+   "a": "エネルギー",
+   "g": "第4回"
+  },
+  {
+   "q": "ナトリウムチャネルでは、通常、細胞外のほうがNa+の濃度が高いので、<XXX>に従い、細胞内にイオンは流れます。",
+   "a": "濃度勾配",
+   "g": "第4回"
+  },
+  {
+   "q": "細胞内のほうがK+の濃度が高いので、カリウムチャネルでは、濃度勾配に従い、通常は細胞<XXX>にK+が流れます。",
+   "a": "外",
+   "g": "第4回"
+  },
+  {
+   "q": "ナトリウムチャネルでは、通常、細胞<XXX>のほうがNa+の濃度が高いので、濃度勾配に従い、細胞内にイオンは流れます。",
+   "a": "外",
+   "g": "第4回"
+  },
+  {
+   "q": "ナトリウムチャネルでは、通常、細胞外のほうがNa+の濃度が高いので、濃度勾配に従い、細胞<XXX>にイオンは流れます。",
+   "a": "内",
+   "g": "第4回"
+  },
+  {
+   "q": "Na+/K+ポンプは全体としてプラス(←カタカナ)の電荷を細胞外へ輸送している。このようなポンプを<XXX>ポンプと呼ぶ。",
+   "a": "起電性",
+   "g": "第4回"
+  },
+  {
+   "q": "イオンポンプの構造の変化は、ATPの分解により供給される<XXX>を必要とする",
+   "a": "エネルギー",
+   "g": "第4回"
+  },
+  {
+   "q": "リガンドとはイオンチャネルに結合できる化学物質のことであり、これが結合しているかどうかでチャネルが開くか閉じるかが決まることを<XXX>依存性という。",
+   "a": "リガンド",
+   "g": "第4回"
+  },
+  {
+   "q": "膜電位は、通常<XXX>という方法で測定する。",
+   "a": "パッチクランプ",
+   "g": "第5回"
+  },
+  {
+   "q": "静止状態よりも細胞内のカリウムイオンが増えて、細胞内外のカリウムイオンの濃度勾配が大きくなり、カリウムリークチャネルにおける濃度勾配による移動の力が強くなると、カリウムイオンというプラスの電荷が外へ移動するため、細胞<XXX>の電位が上がり、電場の力も強くなり、新たな平衡状態になる。",
+   "a": "外",
+   "g": "第5回"
+  },
+  {
+   "q": "カリウムイオンは細胞外より細胞内の方が濃度が高いので、カリウムリークチャネルでは、<XXX>によりカリウムイオンを細胞外へ移動させる力が働く。",
+   "a": "濃度勾配",
+   "g": "第5回"
+  },
+  {
+   "q": "細胞膜の電位の計測では、通常、<XXX>の電位は0mVである。",
+   "a": "細胞外",
+   "g": "第5回"
+  },
+  {
+   "q": "神経細胞において、カリウム<XXX>チャネルは常に開いている。",
+   "a": "リーク",
+   "g": "第5回"
+  },
+  {
+   "q": "Na+/K+ポンプは、イオン輸送によって細胞<XXX>の電位を下げる効果がある。",
+   "a": "内",
+   "g": "第5回"
+  },
+  {
+   "q": "細胞外を基準として計測する細胞内の電位を<XXX>と呼ぶ。",
+   "a": "膜電位",
+   "g": "第5回"
+  },
+  {
+   "q": "電場では、プラスの電荷が多い方が電位が<XXX>いと考える。",
+   "a": "高",
+   "g": "第5回"
+  },
+  {
+   "q": "細胞内の電位は細胞外より低いので、カリウムリークチャネルでは、電場からカリウムイオンを細胞<XXX>へ移動させる力が働く。",
+   "a": "内",
+   "g": "第5回"
+  },
+  {
+   "q": "静止状態よりも細胞内のカリウムイオンが増えて、細胞内外のカリウムイオンの濃度勾配が大きくなり、カリウムリークチャネルにおける濃度勾配による移動の力が強くなると、カリウムイオンというプラスの電荷が外へ移動するため、細胞外の電位が上がり、電場の力も<XXX>くなり、新たな平衡状態になる。",
+   "a": "強",
+   "g": "第5回"
+  },
+  {
+   "q": "静止状態よりも細胞内のプラスの電荷が減って、細胞内外の電位差が大きくなり、カリウムリークチャネルにおける電場の力による移動の力が強くなると、カリウムイオンというプラスの電荷が<XXX>へ移動するため、細胞内の電位が上がり、今度は電位差が小さくなり、新たな平衡状態になる。",
+   "a": "中",
+   "g": "第5回"
+  },
+  {
+   "q": "細胞外を基準として計測する<XXX>の電位を膜電位と呼ぶ。",
+   "a": "細胞内",
+   "g": "第5回"
+  },
+  {
+   "q": "Na+/K+ポンプは、細胞外へ<XXX>(←カタカナ)イオンを、細胞内にカリウムイオンを輸送するのを3:2 の割合で行うので、全体としてはプラスの電荷を細胞外に出すことになる。",
+   "a": "ナトリウム",
+   "g": "第5回"
+  },
+  {
+   "q": "静止状態よりも細胞内のカリウムイオンが増えて、細胞内外のカリウムイオンの濃度勾配が大きくなり、カリウムリークチャネルにおける濃度勾配による移動の力が強くなると、カリウムイオンというプラスの電荷が<XXX>へ移動するため、細胞外の電位が上がり、電場の力も強くなり、新たな平衡状態になる。",
+   "a": "外",
+   "g": "第5回"
+  },
+  {
+   "q": "<XXX>を基準として計測する細胞内の電位を膜電位と呼ぶ。",
+   "a": "細胞外",
+   "g": "第5回"
+  },
+  {
+   "q": "細胞内の電位は細胞外より<XXX>(←高い or 低い)ので、カリウムリークチャネルでは、電場からカリウムイオンを細胞内へ移動させる力が働く。",
+   "a": "低い",
+   "g": "第5回"
+  },
+  {
+   "q": "Na+/K+ポンプは、細胞外へナトリウムイオンを、細胞内に<XXX>(←カタカナ)イオンを輸送するのを3:2の割合で行うので、全体としてはプラスの電荷を細胞外に出すことになる。",
+   "a": "カリウム",
+   "g": "第5回"
+  },
+  {
+   "q": "カリウムイオンは細胞外より細胞内の方が濃度が<XXX>(←高い or 低い)ので、カリウムリークチャネルでは、濃度勾配によりカリウムイオンを細胞外へ移動させる力が働く。",
+   "a": "高い",
+   "g": "第5回"
+  },
+  {
+   "q": "Na+/K+ポンプは、細胞外へナトリウムイオンを、細胞内にカリウムイオンを輸送するのを3:<XXX> (←比の数字は半角数字)の割合で行うので、全体としてはプラスの電荷を細胞外に出すことになる。",
+   "a": "2",
+   "g": "第5回"
+  },
+  {
+   "q": "静止状態よりも細胞内のプラスの電荷が減って、細胞内外の電位差が大きくなり、カリウムリークチャネルにおける電場の力による移動の力が強くなると、カリウムイオンというプラスの電荷が中へ移動するため、細胞内の電位が上がり、今度は電位差が<XXX>(←大きく or 小さく)なり、新たな平衡状態になる。",
+   "a": "小さく",
+   "g": "第5回"
+  },
+  {
+   "q": "延髄は<XXX>の一部である。",
+   "a": "脳幹",
+   "g": "総まとめ"
+  },
+  {
+   "q": "脳幹は脳の中で、頭蓋骨の<XXX>にある部分をさす。",
+   "a": "内側",
+   "g": "総まとめ"
+  },
+  {
+   "q": "軸索は神経細胞において、神経細胞体からの情報を<XXX>へ伝える。",
+   "a": "神経終末",
+   "g": "総まとめ"
+  },
+  {
+   "q": "細胞膜では、リン脂質の<XXX>部同士が互いに接している。",
+   "a": "疎水",
+   "g": "総まとめ"
+  },
+  {
+   "q": "リン脂質の頭部は<XXX>をもつため親水性である。",
+   "a": "電荷",
+   "g": "総まとめ"
+  },
+  {
+   "q": "イオンは電荷をもつため、細胞膜の<XXX>性の部分と親和性が高い。",
+   "a": "親水",
+   "g": "総まとめ"
+  },
+  {
+   "q": "イオンポンプで濃度勾配に逆らってイオンを輸送するには、<XXX>の分解によるエネルギーが必要である。",
+   "a": "ATP",
+   "g": "総まとめ"
+  },
+  {
+   "q": "イオン<XXX>の選択性は、チャネルを通るイオンの種類を決定するのに重要である。",
+   "a": "チャネル",
+   "g": "総まとめ"
+  },
+  {
+   "q": "Na+/K+ポンプの働きにより細胞<XXX>へ電荷がくみ出される。",
+   "a": "外",
+   "g": "総まとめ"
+  },
+  {
+   "q": "<XXX>電荷を持つ物質は、電場において低電位側から高電位側に力を受ける性質がある。",
+   "a": "負",
+   "g": "総まとめ"
+  },
+  {
+   "q": "細胞膜の細胞<XXX>は負電荷が多いので電位は低い。",
+   "a": "内側",
+   "g": "総まとめ"
+  },
+  {
+   "q": "Na+/K+ポンプは細胞<XXX>の電位を低く維持するために有用である。",
+   "a": "内",
+   "g": "総まとめ"
+  },
+  {
+   "q": "K+<XXX>チャネルはゲートがなく、常にK+イオンを通すチャネルである。",
+   "a": "リーク",
+   "g": "総まとめ"
+  },
+  {
+   "q": "K+は細胞外より細胞内の方が濃度が高いので、濃度勾配による細胞<XXX>方向への力が働く。",
+   "a": "外",
+   "g": "総まとめ"
+  },
+  {
+   "q": "静止状態では、K+に対する<XXX>の力と濃度勾配の力の方向が反対であるため、電位が安定する。",
+   "a": "電場",
+   "g": "総まとめ"
+  },
+  {
+   "q": "<XXX>は中枢神経系の一部で、運動の制御を担当している",
+   "a": "小脳",
+   "g": "総まとめ"
+  },
+  {
+   "q": "細胞膜は<XXX>を持つイオンなどの通過を防ぐ",
+   "a": "電荷",
+   "g": "総まとめ"
+  },
+  {
+   "q": "動物細胞の核には、細胞の遺伝的情報を保持する<XXX>分子が存在する",
+   "a": "DNA",
+   "g": "総まとめ"
+  },
+  {
+   "q": "<XXX>は、細胞外を基準とした細胞内の電位である。",
+   "a": "膜電位",
+   "g": "総まとめ"
+  },
+  {
+   "q": "Na+/K+ ポンプはK+イオンを細胞<XXX>、Na+イオンを細胞外に移動させる",
+   "a": "内",
+   "g": "総まとめ"
+  },
+  {
+   "q": "神経細胞体には、タンパク質を生成する<XXX>などの細胞小器官が存在する",
+   "a": "リボソーム",
+   "g": "総まとめ"
+  },
+  {
+   "q": "エネルギーを外部から得ずに行われる物質の輸送、例えば拡散は<XXX>輸送と呼ばれる",
+   "a": "受動",
+   "g": "総まとめ"
+  },
+  {
+   "q": "細胞内のカリウムイオンが静止状態よりも増加すると、濃度勾配の力が強まり、その結果膜電位は<XXX>する",
+   "a": "低下",
+   "g": "総まとめ"
+  },
+  {
+   "q": "Na+/K+ポンプは全体的にプラスの電荷を細胞の外へ移動させる<XXX>性ポンプである",
+   "a": "起電",
+   "g": "総まとめ"
+  },
+  {
+   "q": "イオンチャネルでは、通過するイオンの<XXX>はチャネルの選択性によって決定される",
+   "a": "種類",
+   "g": "総まとめ"
+  },
+  {
+   "q": "細胞内の電位を<XXX>を基準に測定したものを膜電位と称する",
+   "a": "細胞外",
+   "g": "総まとめ"
+  },
+  {
+   "q": "静止状態では、細胞外への<XXX>の力と細胞内への電位の力がバランスを保っている",
+   "a": "濃度勾配",
+   "g": "総まとめ"
+  },
+  {
+   "q": "Na+/K+ポンプは、プラスのイオンを細胞<XXX>に多く送り出すことで膜電位を低下させる",
+   "a": "外",
+   "g": "総まとめ"
+  }
+ ]
+}
+;
 </script>
 <script>
 "use strict";
@@ -829,7 +1525,7 @@ async function initCloud(){
     const remote = snap.exists ? normalize(snap.data()) : null;
     if(remote && remote.updatedAt > state.updatedAt){
       state = remote; localOk = saveLocal(state);
-      if(!session) render();      // 解答中は画面を差し替えない
+      if(!session && !fsession) render();      // 解答中は画面を差し替えない
     }else if(!remote || remote.updatedAt < state.updatedAt){
       pushCloud();
     }
@@ -888,12 +1584,13 @@ const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"
 const KEYS = ["A","B","C","D"];
 
 function render(view){
-  view = view || (session ? "quiz" : (location.hash.replace("#","")||"home"));
+  view = view || (session ? "quiz" : fsession ? "fquiz" : (location.hash.replace("#","")||"home"));
   if(view==="quiz" && !session) view = "home";
+  if(/^(form-|fquiz|fresult)/.test(view)){ renderForm(view); window.scrollTo(0,0); return; }
   ({home:viewHome, setup:viewSetup, review:viewReviewHome, records:viewRecords, quiz:viewQuiz, result:viewResult}[view] || viewHome)();
   window.scrollTo(0,0);
 }
-function go(view){ if(view!=="quiz"&&view!=="result") session=null; try{ history.replaceState(null,"",view==="home"?location.pathname:"#"+view);}catch(e){} render(view); }
+function go(view){ if(view!=="quiz"&&view!=="result") session=null; if(view!=="fquiz"&&view!=="fresult") fsession=null; try{ history.replaceState(null,"",view==="home"?location.pathname:"#"+view);}catch(e){} render(view); }
 
 function statsHTML(){
   const t = totals();
@@ -908,15 +1605,18 @@ function viewHome(){
   app.innerHTML = `
   <section class="card">
     <h1>今日も1セットやろう</h1>
-    <p class="muted">第1〜5回のふりかえりテストの範囲から、全${QUESTIONS.length}問の4択問題。</p>
+    <h2 style="margin-top:6px">4択ドリル</h2>
+    <p class="muted">第1〜5回の範囲から作った、全${QUESTIONS.length}問の4択問題。</p>
     ${statsHTML()}
   </section>
   <nav class="menu">
     <button class="mbtn" data-go="setup"><span class="ic">▶</span><span><b>通常学習</b><small>範囲と問題数を選んで解く</small></span></button>
     <button class="mbtn" data-go="review"><span class="ic y">↺</span><span><b>間違えた問題の復習${t.review?`<span class="badge">${t.review}</span>`:""}</b><small>要復習 ${t.review}問 ／ 克服済み ${t.cleared}問</small></span></button>
     <button class="mbtn" data-go="records"><span class="ic g">≡</span><span><b>学習記録</b><small>回ごとの正答率・要復習の一覧</small></span></button>
-  </nav>`;
+  </nav>
+  ${formHomeHTML()}`;
   app.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+  app.querySelectorAll("[data-form]").forEach(b=>b.onclick=()=>go("form-"+b.dataset.form));
 }
 
 function viewSetup(){
@@ -1016,18 +1716,19 @@ function viewRecords(){
   const recent = state.log.slice(-15).reverse().filter(l=>QMAP[l.id]);
   const fmt = ms => { const d=new Date(ms); return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; };
   app.innerHTML = `
-  <section class="card"><h2>学習記録</h2>${statsHTML()}
+  <section class="card"><h2>学習記録（4択ドリル）</h2>${statsHTML()}
     <p class="muted" style="margin-top:10px">克服済み ${t.cleared}問 ／ 全${QUESTIONS.length}問</p></section>
   <section class="card"><h2>回ごとの成績</h2>
     <table><thead><tr><th>回</th><th>回答</th><th>正答率</th><th>要復習</th><th>克服</th></tr></thead><tbody>
     ${per.map(p=>`<tr><td>第${p.r}回 <span class="muted">(${p.n}問)</span></td><td class="num">${p.c+p.w}</td><td class="num">${p.c+p.w?Math.round(p.c/(p.c+p.w)*100)+"%":"—"}</td><td class="num">${p.rev}</td><td class="num">${p.clr}</td></tr>`).join("")}
     </tbody></table></section>
-  <section class="card"><h2>最近の回答</h2>
+  ${formRecordsHTML()}
+  <section class="card"><h2>最近の回答（4択）</h2>
     ${recent.length?`<ul class="list">${recent.map(l=>`<li><span class="tag ${l.ok?"":"y"}">${l.ok?"○ 正解":"× 不正解"}</span><span class="muted">${fmt(l.at)}・${l.mode==="review"?"復習":"通常"}</span><br>${esc(QMAP[l.id].q)}</li>`).join("")}</ul>`:`<p class="muted">まだ回答がありません。</p>`}
   </section>
   <div class="row"><button class="btn ghost" id="back">ホームへ</button><button class="btn danger" id="reset">記録をリセット</button></div>`;
   app.querySelector("#back").onclick=()=>go("home");
-  app.querySelector("#reset").onclick=()=>confirmModal("学習記録をすべて消しますか？","回答数・正答率・要復習／克服済みの状態がすべて消え、元に戻せません。","消す",()=>{
+  app.querySelector("#reset").onclick=()=>confirmModal("学習記録をすべて消しますか？","4択ドリルと本番形式の、回答数・正答率・要復習／克服済みの状態がすべて消え、元に戻せません。","消す",()=>{
     state = emptyState(); persist(); go("records");
   });
 }
@@ -1155,8 +1856,261 @@ function viewResult(){
   const m=app.querySelector("#more"); if(m) m.onclick=()=>go("setup");
 }
 
+// ================= 本番形式（はい／いいえ・記述・穴埋め） =================
+// 4択ドリルとは別に記録する。IDは yn-01 / wr-01 / fb-001 のように種類ごとに振る。
+const FKINDS = {
+  yn: { name:"はい／いいえ", desc:"文が正しければ「はい」、まちがいなら「いいえ」。", icon:"?" },
+  wr: { name:"記述", desc:"[ ]の中を、示された語とX・Yを埋めて書く。", icon:"✎" },
+  fb: { name:"穴埋め", desc:"<XXX>に入る語を1つ書く。", icon:"□" },
+};
+const FMAP = {};
+const FLIST = { yn:[], wr:[], fb:[] };
+const pad = (n, w) => String(n).padStart(w, "0");
+const groupOf = src => { const m = String(src||"").match(/第(\d)回/); return m ? `第${m[1]}回` : "その他"; };
+FORMS.yn.forEach((x,i)=>{ const q={...x, kind:"yn", id:"yn-"+pad(i+1,2), no:i+1, g:groupOf(x.src)}; FMAP[q.id]=q; FLIST.yn.push(q); });
+FORMS.wr.forEach((x,i)=>{ const q={...x, kind:"wr", id:"wr-"+pad(i+1,2), no:i+1, g:groupOf(x.src)}; FMAP[q.id]=q; FLIST.wr.push(q); });
+FORMS.fb.forEach((x,i)=>{ const q={...x, kind:"fb", id:"fb-"+pad(i+1,3), no:i+1}; FMAP[q.id]=q; FLIST.fb.push(q); });
+const FGROUPS = k => [...new Set(FLIST[k].map(q=>q.g))];
+
+// ---- 採点用の表記ゆれ吸収 ----
+// NFKC（全角英数→半角など）→小文字→カタカナをひらがなに→空白・句読点・かっこを除く
+function norm(s){
+  return String(s||"").normalize("NFKC").toLowerCase()
+    .replace(/[ァ-ヶ]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60))
+    .replace(/[\s、。,.・「」『』()（）\[\]［］]/g, "");
+}
+// 穴埋めで正解として受け付ける別表記（左＝正解、右＝同じ意味として認める答え）
+const FB_ALT = { "たんぱく":["蛋白"], "パッチクランプ":["パッチクランプ法"], "中":["内","細胞内"], "内":["中"],
+  "低下":["下降"], "内側":["内"], "神経終末":["神経末端"], "起電性":["起電"], "起電":["起電性"] };
+function fbAccepts(q, ans){
+  const a = norm(ans); if(!a) return false;
+  return [q.a, ...(FB_ALT[q.a]||[])].some(x=>norm(x)===a);
+}
+const brackets = s => [...String(s).matchAll(/\[([^\]]*)\]/g)].map(m=>m[1]);
+const WR_ALT = { "wr-05":[["軸索の末端には神経末端"]] };   // 解説で「神経末端」も正答とされている
+function wrAccepts(q, answers){
+  const sets = [brackets(q.model), ...(WR_ALT[q.id]||[])];
+  return sets.some(set => set.length===answers.length && set.every((m,i)=>norm(m)===norm(answers[i])));
+}
+
+// ---- 記録（4択と同じ「要復習／克服済み」の考え方。集計は種類ごと） ----
+function fIdsBy(kind, st){ return FLIST[kind].map(q=>q.id).filter(id=>state.items[id] && state.items[id].status===st); }
+function fTotals(kind){
+  let c=0,w=0; for(const q of FLIST[kind]){ const it=state.items[q.id]; if(it){ c+=it.correct; w+=it.wrong; } }
+  return { answered:c+w, rate:(c+w)?Math.round(c/(c+w)*100):null, review:fIdsBy(kind,"review").length, cleared:fIdsBy(kind,"cleared").length, n:FLIST[kind].length };
+}
+function fReviewQueue(kind){
+  const pr=(a,b)=>(state.items[b].wrong-state.items[a].wrong)||(state.items[b].lastWrongAt-state.items[a].lastWrongAt);
+  return fIdsBy(kind,"review").sort(pr);
+}
+// 穴埋めで「表記ゆれで合っていた」と直したとき、直前の不正解の記録を正解に置き換える
+function overrideToCorrect(id, mode, prevStatus){
+  const it = state.items[id]; if(!it || it.wrong<=0) return;
+  it.wrong--; it.correct++;
+  it.status = (mode==="review" && prevStatus==="review") ? "cleared" : prevStatus;
+  for(let i=state.log.length-1;i>=0;i--){ if(state.log[i].id===id){ state.log[i].ok=true; break; } }
+  persist();
+}
+
+// ---- ホーム・記録に足す部分 ----
+function formHomeHTML(){
+  const rows = Object.keys(FKINDS).map(k=>{ const t=fTotals(k);
+    return `<button class="mbtn" data-form="${k}"><span class="ic f">${FKINDS[k].icon}</span><span><b>${FKINDS[k].name}（${t.n}問）${t.review?`<span class="badge">${t.review}</span>`:""}</b><small>${t.answered?`正答率 ${t.rate}% ・ 要復習 ${t.review}問`:esc(FKINDS[k].desc)}</small></span></button>`; }).join("");
+  return `<section class="card" style="margin-top:14px"><h2>本番形式（テストと同じ形）</h2><p class="muted">4択ドリルとは別に記録します。</p><nav class="menu">${rows}</nav></section>`;
+}
+function formRecordsHTML(){
+  return `<section class="card"><h2>本番形式の成績</h2><table><thead><tr><th>形式</th><th>回答</th><th>正答率</th><th>要復習</th><th>克服</th></tr></thead><tbody>
+  ${Object.keys(FKINDS).map(k=>{const t=fTotals(k);return `<tr><td>${FKINDS[k].name} <span class="muted">(${t.n}問)</span></td><td class="num">${t.answered}</td><td class="num">${t.rate===null?"—":t.rate+"%"}</td><td class="num">${t.review}</td><td class="num">${t.cleared}</td></tr>`;}).join("")}
+  </tbody></table></section>`;
+}
+
+// ---- 画面 ----
+let fsession = null;   // {kind, mode, ids, idx, phase:"ask"|"judge"|"done", ok, input:[], prevStatus, results:[]}
+const fsetup = { yn:{groups:null,count:0,order:"seq"}, wr:{groups:null,count:0,order:"seq"}, fb:{groups:null,count:20,order:"shuffle"} };
+function renderForm(view){
+  if(view.startsWith("form-")){ const k=view.slice(5); return FKINDS[k] ? viewFormHome(k) : viewHome(); }
+  if(view==="fquiz") return fsession ? viewFQuiz() : viewHome();
+  if(view==="fresult") return viewFResult();
+}
+function viewFormHome(k){
+  const t=fTotals(k), cfg=fsetup[k], groups=FGROUPS(k);
+  if(!cfg.groups) cfg.groups=new Set(groups);
+  const pool = FLIST[k].filter(q=>cfg.groups.has(q.g));
+  const n = Math.min(cfg.count||pool.length, pool.length);
+  app.innerHTML = `
+  <section class="card">
+    <h2>${FKINDS[k].name}</h2>
+    <p class="muted">${esc(FKINDS[k].desc)}${k==="fb"?"　ひらがな・カタカナ、全角・半角の違いは気にしなくて大丈夫です。":""}${k==="wr"?"　模範解答と同じなら自動で○、違うときは見比べて自分で○×をつけます。":""}</p>
+    <div class="stats">
+      <div class="stat"><b>${t.answered}</b><span>回答数</span></div>
+      <div class="stat"><b>${t.rate===null?"—":t.rate+"%"}</b><span>正答率</span></div>
+      <div class="stat warn"><b>${t.review}</b><span>要復習</span></div>
+    </div>
+    <div class="label">出題範囲</div>
+    <div class="chips">
+      <button class="chip" data-gall aria-pressed="${cfg.groups.size===groups.length}">すべて</button>
+      ${groups.map(g=>`<button class="chip" data-g="${esc(g)}" aria-pressed="${cfg.groups.has(g)&&cfg.groups.size!==groups.length}">${esc(g)}</button>`).join("")}
+    </div>
+    <div class="label">問題数</div>
+    <div class="chips">${[10,20,0].map(c=>`<button class="chip" data-c="${c}" aria-pressed="${cfg.count===c}">${c?c+"問":"全部"}</button>`).join("")}</div>
+    <div class="label">順番</div>
+    <div class="chips"><button class="chip" data-o="seq" aria-pressed="${cfg.order==="seq"}">番号順</button><button class="chip" data-o="shuffle" aria-pressed="${cfg.order==="shuffle"}">シャッフル</button></div>
+    <p class="muted" style="margin-top:12px">対象 ${pool.length}問 → ${n}問を出題します。</p>
+    <div class="row" style="margin-top:8px">
+      <button class="btn ghost" id="back">戻る</button>
+      <button class="btn" id="start" ${pool.length?"":"disabled"}>スタート</button>
+    </div>
+    ${t.review?`<button class="btn wide" id="rev" style="margin-top:10px;background:var(--warn);border-bottom-color:#8a5a12">間違えた問題だけ解く（${t.review}問）</button>`
+      :`<p class="muted" style="margin-top:12px;text-align:center">${t.cleared?`要復習の問題はありません（克服済み ${t.cleared}問）。`:"間違えた問題はここから復習できます。"}</p>`}
+  </section>`;
+  app.querySelector("[data-gall]").onclick=()=>{ cfg.groups=new Set(groups); viewFormHome(k); };
+  app.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{ const g=b.dataset.g;
+    if(cfg.groups.size===groups.length) cfg.groups=new Set([g]);
+    else if(cfg.groups.has(g)){ cfg.groups.delete(g); if(!cfg.groups.size) cfg.groups=new Set(groups); }
+    else cfg.groups.add(g);
+    viewFormHome(k); });
+  app.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{ cfg.count=+b.dataset.c; viewFormHome(k); });
+  app.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{ cfg.order=b.dataset.o; viewFormHome(k); });
+  app.querySelector("#back").onclick=()=>go("home");
+  app.querySelector("#start").onclick=()=>{
+    let ids = pool.map(q=>q.id); if(cfg.order==="shuffle") ids=shuffle(ids);
+    startF(k, "normal", ids.slice(0, cfg.count||ids.length));
+  };
+  const r=app.querySelector("#rev"); if(r) r.onclick=()=>startF(k, "review", fReviewQueue(k));
+}
+function startF(kind, mode, ids){
+  if(!ids.length) return;
+  fsession = { kind, mode, ids, idx:0, results:[] };
+  prepF(); render("fquiz");
+}
+function prepF(){
+  const s=fsession, it=state.items[s.ids[s.idx]];
+  s.phase="ask"; s.ok=null; s.input=[]; s.prevStatus = it ? it.status : null; s.overridden=false; s.auto=false;
+}
+function fRecord(ok){
+  const s=fsession; if(s.phase==="done") return;
+  s.ok=ok; s.phase="done";
+  s.results.push({id:s.ids[s.idx], ok});
+  recordAnswer(s.ids[s.idx], ok, s.mode);
+}
+// <XXX> を空欄の箱にして表示（答えを入れて表示することもできる）
+function fbSentence(q, fill){
+  return esc(q.q).replace(/&lt;XXX&gt;/g, fill==null ? `<span class="blank">　？　</span>` : `<span class="blank filled">${esc(fill)}</span>`);
+}
+function wrPrompt(q){ return esc(q.q).replace(/\[([^\]]*)\]/g, (_,x)=>`<span class="blank">[ ${x} ]</span>`); }
+function wrModel(q){ return esc(q.model).replace(/\[([^\]]*)\]/g, (_,x)=>`<span class="blank filled">${x}</span>`); }
+
+function viewFQuiz(){
+  const s=fsession, q=FMAP[s.ids[s.idx]], K=FKINDS[s.kind];
+  const done = s.idx + (s.phase==="done"?1:0), okc=s.results.filter(r=>r.ok).length;
+  const tags = `<span class="tag">${esc(q.g)}</span> <span class="tag">${K.name} 問${q.no}</span>${s.prevStatus==="review"?` <span class="tag y">要復習</span>`:""}`;
+  let body="", after="";
+  if(s.kind==="yn"){
+    const pickedYes = s.input[0]===true, pickedNo = s.input[0]===false;
+    const cls = v => s.phase!=="done" ? "" : (q.a===v ? "is-ok" : ((v?pickedYes:pickedNo) ? "is-ng" : "dim"));
+    const ynMarks = v => { if(s.phase!=="done") return ""; const mine = v?pickedYes:pickedNo;
+      const m = (q.a===v?`<span class="mk ok">✓ 正解</span>`:(mine?`<span class="mk ng">✗ 不正解</span>`:"")) + (mine?`<span class="mk me">あなたの回答</span>`:"");
+      return m?`<span class="marks" style="justify-content:center">${m}</span>`:""; };
+    body = `<div class="qtext">${esc(q.q)}</div>
+      <div class="ynrow">
+        <button class="choice yn ${cls(true)}" data-yn="1" ${s.phase==="done"?"disabled":""}><span class="body">はい${ynMarks(true)}</span></button>
+        <button class="choice yn ${cls(false)}" data-yn="0" ${s.phase==="done"?"disabled":""}><span class="body">いいえ${ynMarks(false)}</span></button>
+      </div>`;
+    if(s.phase==="done") after = verdictHTML(s.ok, `正解：${q.a?"はい":"いいえ"}`) + expHTML(q.exp, q.src);
+  }else if(s.kind==="fb"){
+    body = `<div class="qtext">${fbSentence(q, s.phase==="done"?q.a:null)}</div>
+      <form id="fbForm" class="answer-row" autocomplete="off">
+        <input id="fbIn" class="ans" type="text" inputmode="text" placeholder="<XXX>に入る語" value="${esc(s.input[0]||"")}" ${s.phase==="done"?"disabled":""}>
+        ${s.phase==="done"?"":`<button class="btn" type="submit">答え合わせ</button>`}
+      </form>`;
+    if(s.phase==="done"){
+      after = verdictHTML(s.ok, `あなたの答え：${esc(s.input[0]||"（空欄）")}　／　正解：${esc(q.a)}`) +
+        (!s.ok && !s.overridden ? `<button class="btn ghost wide" id="override" style="margin-top:4px">表記がちがうだけで合っていた → 正解にする</button>` : "") +
+        (s.overridden ? `<p class="muted">正解として記録し直しました。</p>` : "");
+    }
+  }else{ // wr
+    const n = brackets(q.q).length;
+    body = `<div class="qtext">${wrPrompt(q)}</div>
+      <p class="muted">${n>1?`[ ]が${n}つあります。それぞれの中身を書いてください。`:"[ ]の中身を、示された語とX・Yを埋めて書いてください。"}</p>
+      <form id="wrForm" autocomplete="off">
+        ${Array.from({length:n},(_,i)=>`<input class="ans wr" data-i="${i}" type="text" placeholder="[ ]${n>1?`その${i+1}`:""}の中身" value="${esc(s.input[i]||"")}" ${s.phase!=="ask"?"disabled":""}>`).join("")}
+        ${s.phase==="ask"?`<button class="btn wide" type="submit" style="margin-top:10px">答え合わせ</button>`:""}
+      </form>`;
+    if(s.phase!=="ask"){
+      after = `<div class="exp"><h3><span class="n">模</span>模範解答</h3><div class="box">${wrModel(q)}</div></div>`;
+      if(s.phase==="judge"){
+        after += `<p style="margin-top:14px;font-weight:800">自分の答えと見比べて、採点してください。</p>
+          <div class="row"><button class="btn" id="selfOk" style="background:var(--ok);border-bottom-color:#14612f">○ 合っていた</button><button class="btn danger" id="selfNg">× 違っていた</button></div>`;
+      }else{
+        after = verdictHTML(s.ok, s.auto ? "模範解答と一致しました" : (s.ok ? "自己採点：○" : "自己採点：×")) + after + expHTML(q.exp, q.src);
+      }
+    }
+  }
+  const status = s.phase==="done" ? (s.ok ? (s.mode==="review" && state.items[q.id].status==="cleared" ? "「克服済み」に移りました。" : "") : "「要復習」に登録されました。") : "";
+  app.innerHTML = `
+  <section class="card">
+    <div class="qhead"><span>${K.name}${s.mode==="review"?"（復習）":""}　${s.idx+1} / ${s.ids.length}問</span><span>正解 ${okc}／${s.results.length}</span></div>
+    <div class="bar"><i style="width:${done/s.ids.length*100}%"></i></div>
+    ${tags}
+    ${body}
+    <div id="after">${after}${status?`<p class="muted">${status}</p>`:""}</div>
+    ${s.phase==="done"?`<div class="next"><button class="btn wide" id="nextBtn">${s.idx+1<s.ids.length?"次の問題へ →":"結果を見る"}</button></div>`:""}
+  </section>
+  <button class="btn ghost" id="quit" style="width:100%">中断して戻る</button>`;
+  // ---- 操作 ----
+  if(s.kind==="yn" && s.phase==="ask") app.querySelectorAll("[data-yn]").forEach(b=>b.addEventListener("click",()=>{
+    if(s.phase!=="ask") return; s.input=[b.dataset.yn==="1"]; fRecord(s.input[0]===q.a); viewFQuiz(); }, {once:true}));
+  const fbf=app.querySelector("#fbForm");
+  if(fbf && s.phase==="ask"){ const inp=app.querySelector("#fbIn"); setTimeout(()=>{ try{inp.focus();}catch(e){} });
+    fbf.onsubmit=e=>{ e.preventDefault(); if(s.phase!=="ask") return; const v=inp.value.trim(); if(!v){ inp.focus(); return; }
+      s.input=[v]; fRecord(fbAccepts(q, v)); viewFQuiz(); }; }
+  const ov=app.querySelector("#override"); if(ov) ov.onclick=()=>{ if(s.overridden) return; s.overridden=true;
+    overrideToCorrect(q.id, s.mode, s.prevStatus); s.ok=true; s.results[s.results.length-1].ok=true; viewFQuiz(); };
+  const wrf=app.querySelector("#wrForm");
+  if(wrf && s.phase==="ask"){ const ins=[...app.querySelectorAll("input.wr")]; setTimeout(()=>{ try{ins[0].focus();}catch(e){} });
+    wrf.onsubmit=e=>{ e.preventDefault(); if(s.phase!=="ask") return; s.input=ins.map(x=>x.value.trim());
+      if(s.input.every(v=>!v)){ ins[0].focus(); return; }
+      if(wrAccepts(q, s.input)){ s.auto=true; fRecord(true); } else { s.auto=false; s.phase="judge"; }
+      viewFQuiz(); }; }
+  const so=app.querySelector("#selfOk"), sn=app.querySelector("#selfNg");
+  if(so) so.onclick=()=>{ if(s.phase!=="judge") return; fRecord(true); viewFQuiz(); };
+  if(sn) sn.onclick=()=>{ if(s.phase!=="judge") return; fRecord(false); viewFQuiz(); };
+  const nb=app.querySelector("#nextBtn");
+  if(nb) nb.addEventListener("click",()=>{ nb.disabled=true; if(!fsession) return;
+    if(s.idx+1<s.ids.length){ s.idx++; s.auto=false; prepF(); render("fquiz"); } else render("fresult"); }, {once:true});
+  app.querySelector("#quit").onclick=()=>{ if(s.results.length) render("fresult"); else go("form-"+s.kind); };
+  if(s.phase==="done"){ const v=document.getElementById("verdict"); if(v && v.scrollIntoView) v.scrollIntoView({behavior:"smooth",block:"center"}); }
+}
+function verdictHTML(ok, sub){
+  return `<div class="verdict ${ok?"ok":"ng"}" id="verdict">${ok?"○":"×"}<div>${ok?"正解！":"不正解"}<small>${sub}</small></div></div>`;
+}
+function expHTML(exp, src){
+  return `<div class="exp"><h3><span class="n">解</span>解説</h3><div class="box">${esc(exp)}</div>${src?`<p class="muted" style="margin-top:8px">出てきた回：${esc(src)}</p>`:""}</div>`;
+}
+function viewFResult(){
+  const s=fsession; if(!s){ go("home"); return; }
+  const n=s.results.length, ok=s.results.filter(r=>r.ok).length, wrong=s.results.filter(r=>!r.ok).map(r=>r.id);
+  const t=fTotals(s.kind), kind=s.kind;
+  app.innerHTML = `
+  <section class="card" style="text-align:center">
+    <p class="muted">${FKINDS[kind].name}${s.mode==="review"?"（復習）":""}の結果</p>
+    <div class="result-score">${ok} / ${n}</div>
+    <p>正答率 ${n?Math.round(ok/n*100):0}%</p>
+    <p class="muted">${FKINDS[kind].name}の要復習は全部で ${t.review}問 あります。</p>
+  </section>
+  ${wrong.length?`<section class="card"><h2>今回まちがえた問題</h2><ul class="list">${wrong.map(id=>{const q=FMAP[id];return `<li><span class="tag">${esc(q.g)}</span>${kind==="fb"?fbSentence(q,q.a):esc(q.q)}</li>`;}).join("")}</ul></section>`:""}
+  <div class="row">
+    <button class="btn ghost" id="home">ホームへ</button>
+    ${t.review?`<button class="btn" id="rev">間違えた問題を解く（${t.review}問）</button>`:`<button class="btn" id="more">もう1セット</button>`}
+  </div>`;
+  fsession=null;
+  app.querySelector("#home").onclick=()=>go("home");
+  const r=app.querySelector("#rev"); if(r) r.onclick=()=>startF(kind, "review", fReviewQueue(kind));
+  const m=app.querySelector("#more"); if(m) m.onclick=()=>go("form-"+kind);
+}
+
 document.getElementById("homeLink").onclick=()=>go("home");
-window.addEventListener("hashchange", ()=>{ if(!session) render(); });
+window.addEventListener("hashchange", ()=>{ if(!session && !fsession) render(); });
 setSaveLabel();
 render();
 initCloud();
